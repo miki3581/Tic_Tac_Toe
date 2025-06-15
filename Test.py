@@ -1,7 +1,7 @@
 # Import bibliotek
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, mean_squared_error, r2_score
+# from sklearn.model_selection import train_test_split
+# from sklearn.preprocessing import OneHotEncoder, StandardScaler
+# from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, mean_squared_error, r2_score
 import pandas as pd
 import matplotlib.pyplot as plt
 
