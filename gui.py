@@ -183,7 +183,14 @@ def run_game():
                         game.make_move(row, col)
                 else:
                     if reset_rect and reset_rect.collidepoint(event.pos):
-                        game.reset()
+                        difficulty = show_menu()
+                        if difficulty == "łatwy":
+                            opponent = EasyAI("O")
+                        elif difficulty == "średni":
+                            opponent = MediumAI("O")
+                        else:
+                            opponent = MLAI("O")
+                        game = TicTacToe(opponent)
                         game_over = False
                     elif quit_rect and quit_rect.collidepoint(event.pos):
                         running = False
