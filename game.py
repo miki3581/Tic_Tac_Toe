@@ -46,8 +46,7 @@ class TicTacToe:
         return False
 
     def is_draw(self):
-        return all((cell != " " for row in self.board for cell in row)
-                   and not self.winner)
+        return all(cell != " " for row in self.board for cell in row) and not self.winner
 
     def reset(self):
         self.__init__(self.opponent)

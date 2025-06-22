@@ -3,7 +3,7 @@ import pygame
 from game import TicTacToe
 from opponent.easy import EasyAI
 from opponent.medium import MediumAI
-from opponent.hard import HardAI
+from opponent.hard import MLAI
 
 pygame.init()
 
@@ -81,12 +81,12 @@ def draw_button(text, rect, active_color, inactive_color, mouse_pos):
 def show_menu():
     selecting = True
     btn_width, btn_height = 300, 80
-    easy_btn_rect = pygame.Rect
-    (WIDTH//2 - btn_width//2, 200, btn_width, btn_height)
-    med_btn_rect = pygame.Rect
-    (WIDTH//2 - btn_width//2, 320, btn_width, btn_height)
-    hard_btn_rect = pygame.Rect
-    (WIDTH//2 - btn_width//2, 440, btn_width, btn_height)
+    easy_btn_rect = pygame.Rect(WIDTH//2 - btn_width//2,
+                                200, btn_width, btn_height)
+    med_btn_rect = pygame.Rect(WIDTH//2 - btn_width//2, 320,
+                               btn_width, btn_height)
+    hard_btn_rect = pygame.Rect(WIDTH//2 - btn_width//2, 440,
+                                btn_width, btn_height)
 
     while selecting:
         screen.fill(WHITE)
@@ -95,12 +95,12 @@ def show_menu():
 
         mouse_pos = pygame.mouse.get_pos()
 
-        draw_button("Łatwy", easy_btn_rect,
-                    (170, 220, 170), (140, 200, 140), mouse_pos)
-        draw_button("Średni", med_btn_rect,
-                    (170, 170, 220), (140, 140, 200), mouse_pos)
-        draw_button("Trudny", hard_btn_rect,
-                    (220, 170, 170), (200, 140, 140), mouse_pos)
+        draw_button("Łatwy", easy_btn_rect, (170, 220, 170),
+                    (140, 200, 140), mouse_pos)
+        draw_button("Średni", med_btn_rect, (170, 170, 220),
+                    (140, 140, 200), mouse_pos)
+        draw_button("Trudny", hard_btn_rect, (220, 170, 170),
+                    (200, 140, 140), mouse_pos)
 
         pygame.display.flip()
 
@@ -121,15 +121,15 @@ def draw_endgame_buttons(mouse_pos):
     btn_width, btn_height = 180, 60
     buttons_y = HEIGHT - 70 - btn_height  # 750 - 70 - 60 = 620
 
-    reset_rect = pygame.Rect
-    (WIDTH//4 - btn_width//2, buttons_y, btn_width, btn_height)
-    quit_rect = pygame.Rect
-    (3*WIDTH//4 - btn_width//2, buttons_y, btn_width, btn_height)
+    reset_rect = pygame.Rect(WIDTH//4 - btn_width//2,
+                             buttons_y, btn_width, btn_height)
+    quit_rect = pygame.Rect(3*WIDTH//4 - btn_width//2,
+                            buttons_y, btn_width, btn_height)
 
-    draw_button("Resetuj", reset_rect,
-                (180, 180, 255), (150, 150, 220), mouse_pos)
-    draw_button("Wyjdź", quit_rect,
-                (255, 180, 180), (220, 150, 150), mouse_pos)
+    draw_button("Resetuj", reset_rect, (180, 180, 255),
+                (150, 150, 220), mouse_pos)
+    draw_button("Wyjdź", quit_rect, (255, 180, 180),
+                (220, 150, 150), mouse_pos)
 
     return reset_rect, quit_rect
 
@@ -142,7 +142,7 @@ def run_game():
     elif difficulty == "średni":
         opponent = MediumAI("O")
     else:
-        opponent = HardAI("O")
+        opponent = MLAI("O")
 
     game = TicTacToe(opponent)
     game_over = False
