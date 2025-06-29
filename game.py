@@ -89,9 +89,3 @@ class TicTacToe:
         """
         board_full = all(cell != " " for row in self.board for cell in row)
         return board_full and not self.winner
-
-    def reset(self):
-        """Resetuje stan gry."""
-        self.__init__(self.opponent, self.player_symbol)
-        if self.opponent.symbol == "X":
-            self.make_move_ai()
