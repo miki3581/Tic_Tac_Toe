@@ -14,7 +14,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 128, 0)
-
+GREEN_WIN = (100, 255, 100)
 font = pygame.font.SysFont(None, 180)
 small_font = pygame.font.SysFont(None, 72)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -22,6 +22,7 @@ pygame.display.set_caption("Kółko i Krzyżyk")
 
 
 def draw_lines():
+    """Rysuje linie planszy."""
     for i in range(1, 3):
         pygame.draw.line(screen, BLACK, (0, CELL_SIZE * i),
                          (WIDTH, CELL_SIZE * i), LINE_WIDTH)
@@ -30,6 +31,12 @@ def draw_lines():
 
 
 def draw_symbols(game):
+    """
+    Rysuje symbole X i O na planszy.
+
+    Args:
+        game (TicTacToe): Obiekt gry zawierający aktualny stan planszy.
+    """
     for row in range(3):
         for col in range(3):
             symbol = game.board[row][col]
@@ -41,6 +48,13 @@ def draw_symbols(game):
 
 
 def draw_winning_line(game):
+    """
+    Rysuje linię zwycięstwa, jeśli jest obecna.
+
+    Args:
+        game (TicTacToe): Obiekt gry zawierający informacje o zwycięzcy
+                          i linii zwycięstwa.
+    """
     if game.winner and game.winning_line:
         (start_row, start_col), (end_row, end_col) = game.winning_line
         x1 = start_col * CELL_SIZE + CELL_SIZE // 2
@@ -51,15 +65,23 @@ def draw_winning_line(game):
 
 
 def draw_end_message(winner):
+    """
+    Wyświetla komunikat o zakończeniu gry.
+    Jeśli isnieje zwycięzca, wyświetla jego symbol.
+    W przeciwnym razie wyświetla komunikat o remisie.
+
+    Args:
+        winner (str): Symbol zwycięzcy ('X' lub 'O')
+                      lub None w przypadku remisu.
+    """
     if winner:
         msg = f"{winner} wygrał!"
     else:
         msg = "Remis!"
 
-    text = small_font.render(msg, True, GREEN)
+    text = small_font.render(msg, True, GREEN_WIN)
     outline_color = BLACK
 
-    # Obramowanie tekstu
     for dx, dy in [(-3, 0), (3, 0), (0, -3), (0, 3)]:
         outline = small_font.render(msg, True, outline_color)
         rect = outline.get_rect(center=(WIDTH//2, CELL_SIZE * 3 // 2 + dy))
@@ -71,6 +93,16 @@ def draw_end_message(winner):
 
 
 def draw_button(text, rect, active_color, inactive_color, mouse_pos):
+    """
+    Funkcja rysująca przycisk.
+
+    Args:
+        text (str): Tekst przycisku.
+        rect (pygame.Rect): Prostokąt definiujący położenie i rozmiar przycisku
+        active_color (tuple): Kolor przycisku w stanie aktywnym.
+        inactive_color (tuple): Kolor przycisku w stanie nieaktywnym.
+        mouse_pos (tuple): Pozycja kursora myszy.
+    """
     color = active_color if rect.collidepoint(mouse_pos) else inactive_color
     pygame.draw.rect(screen, color, rect, border_radius=12)
     btn_text = small_font.render(text, True, BLACK)
@@ -79,6 +111,15 @@ def draw_button(text, rect, active_color, inactive_color, mouse_pos):
 
 
 def show_menu():
+    """
+    Wyświetla menu główne gry
+    Pozwala na wybór poziomu trudności i symbolu gracza.
+    Zwraca wybrany poziom trudności i symbol.
+
+    Returns:
+        tuple: Wybrany poziom trudności i symbol gracza.
+               Przykład: ("łatwy", "X")
+    """
     selecting = True
     btn_width, btn_height = 300, 80
     easy_btn_rect = pygame.Rect(WIDTH//2 - btn_width//2,
@@ -87,7 +128,9 @@ def show_menu():
                                btn_width, btn_height)
     hard_btn_rect = pygame.Rect(WIDTH//2 - btn_width//2, 440,
                                 btn_width, btn_height)
+    symbol_btn_rect = pygame.Rect(50, 620, 100, btn_height)
 
+    player_symbol = "X"
     while selecting:
         screen.fill(WHITE)
         title = small_font.render("Wybierz poziom trudności:", True, BLACK)
@@ -95,12 +138,14 @@ def show_menu():
 
         mouse_pos = pygame.mouse.get_pos()
 
-        draw_button("Łatwy", easy_btn_rect, (170, 220, 170),
-                    (140, 200, 140), mouse_pos)
-        draw_button("Średni", med_btn_rect, (170, 170, 220),
-                    (140, 140, 200), mouse_pos)
-        draw_button("Trudny", hard_btn_rect, (220, 170, 170),
-                    (200, 140, 140), mouse_pos)
+        draw_button("Łatwy", easy_btn_rect, (170, 250, 170),
+                    (120, 250, 120), mouse_pos)
+        draw_button("Średni", med_btn_rect, (170, 170, 250),
+                    (120, 120, 250), mouse_pos)
+        draw_button("Trudny", hard_btn_rect, (250, 170, 170),
+                    (250, 120, 120), mouse_pos)
+        draw_button(f"{player_symbol}", symbol_btn_rect, (200, 200, 200),
+                    (200, 200, 200), mouse_pos)
 
         pygame.display.flip()
 
@@ -109,44 +154,61 @@ def show_menu():
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if easy_btn_rect.collidepoint(event.pos):
-                    return "łatwy"
+                if symbol_btn_rect.collidepoint(event.pos):
+                    player_symbol = "O" if player_symbol == "X" else "X"
+                elif easy_btn_rect.collidepoint(event.pos):
+                    return "łatwy", player_symbol
                 elif med_btn_rect.collidepoint(event.pos):
-                    return "średni"
+                    return "średni", player_symbol
                 elif hard_btn_rect.collidepoint(event.pos):
-                    return "trudny"
+                    return "trudny", player_symbol
 
 
 def draw_endgame_buttons(mouse_pos):
+    """
+    Rysuje przyciski końcowe: Resetuj i Wyjdź.
+
+    Args:
+        mouse_pos (tuple): Pozycja kursora myszy.
+
+    Returns:
+        tuple: Prostokąty przycisków Resetuj i Wyjdź.
+    """
     btn_width, btn_height = 180, 60
-    buttons_y = HEIGHT - 70 - btn_height  # 750 - 70 - 60 = 620
+    buttons_y = HEIGHT - 70 - btn_height
 
     reset_rect = pygame.Rect(WIDTH//4 - btn_width//2,
                              buttons_y, btn_width, btn_height)
     quit_rect = pygame.Rect(3*WIDTH//4 - btn_width//2,
                             buttons_y, btn_width, btn_height)
 
-    draw_button("Resetuj", reset_rect, (180, 180, 255),
-                (150, 150, 220), mouse_pos)
-    draw_button("Wyjdź", quit_rect, (255, 180, 180),
-                (220, 150, 150), mouse_pos)
+    draw_button("Resetuj", reset_rect, (170, 250, 170),
+                (120, 250, 120), mouse_pos)
+    draw_button("Wyjdź", quit_rect, (250, 170, 170),
+                (250, 120, 120), mouse_pos)
 
     return reset_rect, quit_rect
 
 
 def run_game():
-    difficulty = show_menu()
+    """Główna pętla gry."""
+    difficulty, player_symbol = show_menu()
 
     if difficulty == "łatwy":
-        opponent = EasyAI("O")
+        opponent = EasyAI("O" if player_symbol == "X" else "X")
     elif difficulty == "średni":
-        opponent = MediumAI("O")
+        opponent = MediumAI("O" if player_symbol == "X" else "X")
     else:
-        opponent = MLAI("O")
+        opponent = MLAI("O" if player_symbol == "X" else "X")
 
-    game = TicTacToe(opponent)
+    game = TicTacToe(opponent, player_symbol)
+    if game.current_player == game.opponent.symbol:
+        game.make_ai_move()
     game_over = False
     running = True
+
+    if game.opponent.symbol == "X":
+        game.make_ai_move()
 
     while running:
         screen.fill(WHITE)
@@ -180,20 +242,16 @@ def run_game():
                     row = y // CELL_SIZE
                     col = x // CELL_SIZE
                     if row < 3:
-                        game.make_move(row, col)
+                        if game.make_move(row, col):
+                            if (game.current_player == game.opponent.symbol
+                                    and not game.winner):
+                                game.make_ai_move()
                 else:
                     if reset_rect and reset_rect.collidepoint(event.pos):
-                        difficulty = show_menu()
-                        if difficulty == "łatwy":
-                            opponent = EasyAI("O")
-                        elif difficulty == "średni":
-                            opponent = MediumAI("O")
-                        else:
-                            opponent = MLAI("O")
-                        game = TicTacToe(opponent)
-                        game_over = False
+                        return
                     elif quit_rect and quit_rect.collidepoint(event.pos):
-                        running = False
+                        pygame.quit()
+                        sys.exit()
 
     pygame.quit()
     sys.exit()

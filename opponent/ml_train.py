@@ -7,6 +7,7 @@ import os
 
 
 def parse_move(move):
+    """Konwertuje ruch w formacie 'row-col' na indeks planszy 0-8."""
     if move == '---':
         return None
     row, col = map(int, move.split('-'))
@@ -14,6 +15,17 @@ def parse_move(move):
 
 
 def moves_to_board(moves, symbol_first='X'):
+    """
+    Konwertuje listę ruchów na wektor reprezentujący stan planszy.
+
+    Args:
+        moves (list): Lista ruchów w formacie 'row-col'.
+        symbol_first (str): Symbol gracza rozpoczynającego ('X' lub 'O').
+
+    Returns:
+        list: Lista stanu planszy, gdzie 1 oznacza 'X', -1 oznacza 'O',
+              a 0 oznacza puste pole.
+    """
     board = [0] * 9
     symbols = ['X', 'O'] * 5
     for i, move in enumerate(moves):
@@ -24,6 +36,14 @@ def moves_to_board(moves, symbol_first='X'):
 
 
 def train_and_save_model(csv_path=None, model_path='tictactoe_model.pkl'):
+    """
+    Trenuje model ML na podstawie danych z pliku CSV
+    i zapisuje go do pliku.
+
+    Args:
+        csv_path (str): Ścieżka do pliku CSV z danymi gier.
+        model_path (str): Ścieżka do pliku, w którym zostanie zapisany model.
+    """
     csv_path = os.path.join(os.path.dirname(__file__), "tictactoe_games.csv")
     model_path = os.path.join(os.path.dirname(__file__), 'tictactoe_model.pkl')
     df = pd.read_csv(csv_path)
